@@ -37,7 +37,6 @@ class NewEBookFeed(val name: String, val title: String, val description: String,
     //grab the new ebooks page
     val newBook: HtmlPage = page.getByXPath("//a[starts-with(text(),'New eBooks')]").toArray().apply(0).asInstanceOf[HtmlAnchor].click()
     val newBookBaseUrl = newBook.getPage.getUrl.toString
-    println(newBookBaseUrl)
 
     var stop = false
     var pageNum = 1
@@ -57,7 +56,7 @@ class NewEBookFeed(val name: String, val title: String, val description: String,
         val titleAnchor = titles(i).asInstanceOf[HtmlDivision].getFirstChild
         val author = authors(i).asInstanceOf[HtmlAnchor]
 
-        val title = titleAnchor.getTextContent
+        val title = titleAnchor.getTextContent.replace("Options for ", "")
         val authorName = author.getTextContent
         val imgSrc = images(i).asInstanceOf[HtmlImage].getAttribute("data-original")
         val bookUrl = baseUrl + "/" + titleAnchor.getAttributes.getNamedItem("href").getNodeValue
@@ -94,5 +93,5 @@ object NewEBookFeed {
 }
 
 object NewEBooksApp extends App{
-  NewEBookFeed.philly.items().foreach(println)
+  NewEBookFeed.delco.items().foreach(println)
 }
