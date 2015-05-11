@@ -2,11 +2,6 @@ package com.josephpconley.rss
 
 import scala.xml.Elem
 
-/**
- * User: jconley
- * Date: 1/16/14
- */
-
 case class Item(title: String, description: String, link: String, guid: String){
   def xml = {
     <item>

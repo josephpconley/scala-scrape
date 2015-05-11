@@ -12,11 +12,6 @@ import scala.xml.Elem
 import scalax.io.Resource
 import java.io.{File, PrintWriter}
 
-/**
- * User: joe
- * Date: 10/21/13
- */
-
 class NewEBookFeed(val name: String, val title: String, val description: String, val link: String, baseUrl: String) extends Feed {
   val atomLink: String = link
   lazy val webClient = new WebClient()
@@ -40,7 +35,7 @@ class NewEBookFeed(val name: String, val title: String, val description: String,
     val page: HtmlPage = webClient.getPage(baseUrl)
 
     //grab the new ebooks page
-    val newBook: HtmlPage = page.getByXPath("//a[starts-with(text(),'New eBooks')]").toArray().apply(1).asInstanceOf[HtmlAnchor].click()
+    val newBook: HtmlPage = page.getByXPath("//a[starts-with(text(),'New eBooks')]").toArray().apply(0).asInstanceOf[HtmlAnchor].click()
     val newBookBaseUrl = newBook.getPage.getUrl.toString
     println(newBookBaseUrl)
 
@@ -51,10 +46,12 @@ class NewEBookFeed(val name: String, val title: String, val description: String,
     while(!stop){
       val newBookPage:HtmlPage = webClient.getPage(newBookBaseUrl + "&Page=" + pageNum)
       pageNum += 1
-      
-      val titles = newBookPage.getByXPath("//div[@class='title-holder']").toArray
+
+      val titles = newBookPage.getByXPath("//div[@class='img-and-info-contain title-data']").toArray
       val authors = newBookPage.getByXPath("//a[@class='tc-author']").toArray
       val images = newBookPage.getByXPath("//img[@class='wtil-cover lzld']").toArray
+
+      titles foreach println
 
       val items = titles.indices.map{ i =>
         val titleAnchor = titles(i).asInstanceOf[HtmlDivision].getFirstChild
@@ -81,17 +78,21 @@ class NewEBookFeed(val name: String, val title: String, val description: String,
 
 object NewEBookFeed {
 
-  lazy val delco = new NewEBookFeed("delco", "Delco New ebooks", "Notification of new ebooks for Delaware County Library members", "http://app.josephpconley.com/rss/delco.xml",
-                                "http://delawareco.libraryreserve.com/")
+  lazy val delco = new NewEBookFeed(
+    name = "delco",
+    title = "Delco New ebooks",
+    description = "Notification of new ebooks for Delaware County Library members",
+    link = "http://app.josephpconley.com/rss/delco.xml",
+    baseUrl = "http://delawareco.libraryreserve.com/")
 
-  lazy val philly = new NewEBookFeed("philly", "Philly New ebooks", "Notification of new ebooks for Free Library of Philadelphia members", "http://app.josephpconley.com/rss/philly.xml",
-                                "http://philadelphia.libraryreserve.com")
+  lazy val philly = new NewEBookFeed(
+    name = "philly",
+    title = "Philly New ebooks",
+    description = "Notification of new ebooks for Free Library of Philadelphia members",
+    link = "http://app.josephpconley.com/rss/philly.xml",
+    baseUrl = "http://philadelphia.libraryreserve.com")
 }
 
 object NewEBooksApp extends App{
-//  val items = NewEBookFeed.philly.items(Some("The Body Book by Cameron Diaz"))
-//  println(items.size)
-
-  NewEBookFeed.delco.items().foreach(println)
-//  NewEBookFeed.philly.items().foreach(println)
+  NewEBookFeed.philly.items().foreach(println)
 }
