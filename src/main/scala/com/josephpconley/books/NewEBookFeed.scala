@@ -50,8 +50,6 @@ class NewEBookFeed(val name: String, val title: String, val description: String,
       val authors = newBookPage.getByXPath("//a[@class='tc-author']").toArray
       val images = newBookPage.getByXPath("//img[@class='wtil-cover lzld']").toArray
 
-      titles foreach println
-
       val items = titles.indices.map{ i =>
         val titleAnchor = titles(i).asInstanceOf[HtmlDivision].getFirstChild
         val author = authors(i).asInstanceOf[HtmlAnchor]
